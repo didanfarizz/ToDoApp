@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'expo-router';
+import { Image } from 'expo-image';
 
 const RegisterScreen = () => {
   const { register } = useAuth();
@@ -33,7 +34,8 @@ const RegisterScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Buat Akun Baru</Text>
+      <Image source={require('../assets/images/logo.png')} style={styles.logo} />
+      <Text style={styles.title}>Create New Account</Text>
 
       <TextInput
         style={styles.input}
@@ -62,13 +64,14 @@ const RegisterScreen = () => {
         <ActivityIndicator size="large" color="#55AD82" style={{ marginVertical: 20 }}/>
       ) : (
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
-          <Text style={styles.buttonText}>Daftar</Text>
+          <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
       )}
 
       <Link href="/login" asChild>
         <TouchableOpacity style={styles.linkButton}>
-          <Text style={styles.linkText}>Sudah punya akun? Login di sini</Text>
+          <Text style={styles.text}>Have an account? </Text>
+          <Text style={styles.linkText}>Login here</Text>
         </TouchableOpacity>
       </Link>
     </View>
@@ -81,8 +84,10 @@ const styles = StyleSheet.create({
   input: { width: '100%', height: 50, backgroundColor: 'white', borderRadius: 10, paddingHorizontal: 15, marginBottom: 15, borderWidth: 1, borderColor: '#E0E0E0' },
   button: { width: '100%', height: 50, backgroundColor: '#55AD82', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginTop: 10, marginBottom: 20 },
   buttonText: { color: 'white', fontSize: 18, fontWeight: 'bold' },
-  linkButton: { alignItems: 'center' },
+  linkButton: { alignItems: 'center', display: 'flex', flexDirection: 'row', justifyContent: 'center', marginTop: 20 },
   linkText: { color: '#4A90E2', fontSize: 16 },
+  logo: { width: 80, height: 80, alignSelf: 'center', marginBottom: 20 },
+  text: { fontSize: 16, color: '#000', textAlign: 'center'},
 });
 
 export default RegisterScreen;
