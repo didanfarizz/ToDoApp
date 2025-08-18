@@ -1,10 +1,8 @@
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { Stack, useRouter, useSegments } from 'expo-router';
-// PERBAIKAN 1: Impor fungsi secara langsung sebagai named export
 import { preventAutoHideAsync, hideAsync } from 'expo-splash-screen';
 import React, { useEffect } from 'react';
 
-// PERBAIKAN 2: Panggil fungsi secara langsung
 preventAutoHideAsync();
 
 const InitialLayout = () => {
@@ -25,7 +23,6 @@ const InitialLayout = () => {
       router.replace('/login');
     }
 
-    // PERBAIKAN 3: Panggil fungsi secara langsung
     hideAsync();
 
   }, [user, loading, segments, router]);

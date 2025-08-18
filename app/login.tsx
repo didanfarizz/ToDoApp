@@ -38,7 +38,6 @@ const LoginScreen = () => {
         </TouchableOpacity>
       )}
 
-      {/* Tambahan: Navigasi untuk membuat akun baru */}
       <Link href="/register" asChild>
         <TouchableOpacity style={styles.linkButton}>
           <Text>Belum punya akun?</Text>
@@ -49,7 +48,6 @@ const LoginScreen = () => {
   );
 };
 
-// Styles (salin dari jawaban sebelumnya, disingkat di sini)
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 20 },
   title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },

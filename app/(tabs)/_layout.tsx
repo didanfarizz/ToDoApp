@@ -6,7 +6,7 @@ export default function TabLayout() {
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: '#55AD82' }}>
       <Tabs.Screen
-        name="index" // Merujuk ke file index.tsx
+        name="index"
         options={{
           title: 'To-Do List',
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="check-square" color={color} />,

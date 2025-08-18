@@ -1,5 +1,3 @@
-// app/register.tsx
-
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useAuth } from '../context/AuthContext';
@@ -26,9 +24,7 @@ const RegisterScreen = () => {
     setLoading(true);
     try {
       await register(email, password);
-      // Navigasi akan ditangani secara otomatis oleh AuthContext dan Root Layout
     } catch (error: any) {
-      // Menampilkan pesan error dari Firebase (misal: email sudah digunakan)
       Alert.alert("Registrasi Gagal", error.message);
     } finally {
       setLoading(false);
@@ -79,7 +75,6 @@ const RegisterScreen = () => {
   );
 };
 
-// Anda bisa menggunakan style yang sama atau mirip dengan halaman login
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#F7F8FA' },
   title: { fontSize: 28, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 30 },
