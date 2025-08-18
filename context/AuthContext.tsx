@@ -1,7 +1,4 @@
-// context/AuthContext.tsx
-
 import React, { createContext, useContext, useState, useEffect, PropsWithChildren } from 'react';
-// 1. Impor 'createUserWithEmailAndPassword' dari firebase/auth
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut, User, createUserWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../config/firebase';
 
@@ -10,13 +7,12 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  // 2. Tambahkan 'register' ke dalam tipe interface
   register: (email: string, password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
+export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -36,10 +32,8 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     await signOut(FIREBASE_AUTH);
   };
 
-  // 3. Buat fungsi 'register' baru
   const register = async (email: string, password: string) => {
     await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
-    // Setelah berhasil, onAuthStateChanged akan otomatis menangani sisanya
   };
 
 
@@ -48,7 +42,6 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     loading,
     login,
     logout,
-    // 4. Sediakan fungsi 'register' di dalam value
     register,
   };
 

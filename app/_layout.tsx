@@ -20,6 +20,7 @@ const InitialLayout = () => {
     if (user && !inTabsGroup) {
       router.replace('/(tabs)');
     } else if (!user && inTabsGroup) {
+      // INI ADALAH BAGIAN KRUSIAL YANG MEMBUAT REDIRECT BEKERJA
       router.replace('/login');
     }
 
@@ -34,6 +35,7 @@ const InitialLayout = () => {
   return (
     <Stack>
       <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen name="register" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
   );

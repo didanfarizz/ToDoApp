@@ -1,26 +1,24 @@
-// app/(tabs)/user.tsx
-
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useAuth } from '../../context/AuthContext'; // Sesuaikan path jika perlu
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
 
 const UserAccount = () => {
   const { user, logout } = useAuth();
 
-  const handleLogout = () => {
-    Alert.alert('Logout', 'Apakah Anda yakin ingin keluar?', [
-      {
-        text: 'Batal',
-        style: 'cancel',
-      },
-      {
-        text: 'Ya, Keluar',
-        onPress: () => logout(),
-        style: 'destructive',
-      },
-    ]);
-  };
+  // const handleLogout = () => {
+  //   Alert.alert('Logout', 'Apakah Anda yakin ingin keluar?', [
+  //     {
+  //       text: 'Batal',
+  //       style: 'cancel',
+  //     },
+  //     {
+  //       text: 'Ya, Keluar',
+  //       onPress: () => logout(),
+  //       style: 'destructive',
+  //     },
+  //   ]);
+  // };
 
   return (
     <View style={styles.container}>
@@ -29,7 +27,7 @@ const UserAccount = () => {
       <Text style={styles.emailLabel}>You are logged in as:</Text>
       <Text style={styles.emailText}>{user?.email}</Text>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      <TouchableOpacity style={styles.logoutButton} onPress={logout}>
         <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
     </View>
@@ -62,7 +60,7 @@ const styles = StyleSheet.create({
   logoutButton: {
     width: '100%',
     padding: 15,
-    backgroundColor: '#e74c3c', // Warna merah untuk logout
+    backgroundColor: '#e74c3c',
     borderRadius: 10,
     alignItems: 'center',
   },
