@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { Button, FlatList, Keyboard, ListRenderItem, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { FlatList, Keyboard, ListRenderItem, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface Task {
   id: string;
@@ -9,9 +8,16 @@ interface Task {
 }
 
 export default function TodoListScreen() {
-  const { logout } = useAuth();
   const [task, setTask] = useState<string>('');
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [currentTime, setCurrentTime] = useState<string>(new Date().toLocaleDateString('en-EN', { month: 'long', day: 'numeric', year: 'numeric' }));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleDateString('en-EN', { month: 'long', day: 'numeric', year: 'numeric' }));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleAddTask = () => {
     if (task.trim()) {
@@ -31,12 +37,8 @@ export default function TodoListScreen() {
   const renderItem: ListRenderItem<Task> = ({ item }) => (
     <View style={styles.taskContainer}>
       <TouchableOpacity style={styles.taskInfo} onPress={() => toggleTask(item.id)}>
-          <View style={[styles.checkbox, item.completed && styles.checkboxCompleted]}>
-              {item.completed && <Text style={styles.checkmark}>✓</Text>}
-          </View>
-          <Text style={[styles.taskText, item.completed && styles.taskTextCompleted]}>
-              {item.text}
-          </Text>
+        <View style={[styles.checkbox, item.completed && styles.checkboxCompleted]}>{item.completed && <Text style={styles.checkmark}>✓</Text>}</View>
+        <Text style={[styles.taskText, item.completed && styles.taskTextCompleted]}>{item.text}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => deleteTask(item.id)}>
         <Text style={styles.deleteText}>Hapus</Text>
@@ -47,8 +49,10 @@ export default function TodoListScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>Daftar Tugas</Text>
-        <Button title="Logout" onPress={logout} color="red" />
+        <Text style={styles.thirdText}>Today,</Text>
+        <View>
+          <Text style={styles.header}>{currentTime}</Text>
+        </View>
       </View>
       <FlatList data={tasks} renderItem={renderItem} keyExtractor={(item) => item.id} />
       <View style={styles.inputContainer}>
@@ -63,7 +67,7 @@ export default function TodoListScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: 50, paddingHorizontal: 20 },
-  headerContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  headerContainer: { flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', marginBottom: 20 },
   header: { fontSize: 24, fontWeight: 'bold' },
   taskContainer: { padding: 10, borderBottomWidth: 1, borderColor: '#ccc' },
   taskInfo: { flexDirection: 'row', alignItems: 'center', flex: 1 },
@@ -78,4 +82,5 @@ const styles = StyleSheet.create({
   addButton: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#55AD82', justifyContent: 'center', alignItems: 'center' },
   addButtonText: { color: 'white', fontSize: 24, fontWeight: 'bold' },
   list: { flex: 1 },
+  thirdText: { fontSize: 16, color: '#999B9A' },
 });
