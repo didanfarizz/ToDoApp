@@ -1,4 +1,4 @@
-import AddTaskModal from '@/components/AddTaskModal';
+import AddTaskModal from '@/components/AddTaskModal'; 
 import { FontAwesome } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ListRenderItem, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -8,6 +8,7 @@ interface Task {
   title: string;
   description: string;
   completed: boolean;
+  date: string;
 }
 
 export default function TodoListScreen() {
@@ -23,12 +24,13 @@ export default function TodoListScreen() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleEditTask = (title: string, description: string) => {
+  const handleSaveTask = (title: string, description: string, date: string) => {
     if (editingTask) {
-      setTasks(tasks.map((t) => (t.id === editingTask.id ? { ...t, title, description } : t)));
-      setEditingTask(null);
+      // Mode Edit
+      setTasks(tasks.map((t) => (t.id === editingTask.id ? { ...t, title, description, date } : t)));
     } else {
-      const newTask: Task = { id: Date.now().toString(), title, description, completed: false };
+      // Mode Tambah Baru
+      const newTask: Task = { id: Date.now().toString(), title, description, completed: false, date };
       setTasks([...tasks, newTask]);
     }
     setEditingTask(null);
@@ -40,15 +42,10 @@ export default function TodoListScreen() {
     setIsModalVisible(true);
   };
 
-  // const handleAddTask = (title: string, description: string) => {
-  //   const newTask: Task = { id: Date.now().toString(), title, description, completed: false };
-  //   setTasks([...tasks, newTask]);
-  //   setIsModalVisible(false);
-  // };
-
   const toggleTask = (id: string) => {
     setTasks(tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
   };
+
   const deleteTask = (id: string) => {
     setTasks(tasks.filter((t) => t.id !== id));
   };
@@ -60,6 +57,7 @@ export default function TodoListScreen() {
         <View style={styles.taskTextContainer}>
           <Text style={[styles.taskText, item.completed && styles.taskTextCompleted]}>{item.title}</Text>
           {item.description ? <Text style={[styles.taskDescription, item.completed && styles.taskTextCompleted]}>{item.description}</Text> : null}
+          <Text style={styles.taskDate}><FontAwesome name="calendar" size={12} color="#888" /> {new Date(item.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => handleEditPress(item)} style={styles.actionButton}>
@@ -79,21 +77,27 @@ export default function TodoListScreen() {
           <Text style={styles.header}>{currentTime}</Text>
         </View>
       </View>
-      <FlatList data={tasks} renderItem={renderItem} keyExtractor={(item) => item.id} />
+
+      {tasks.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No tasks yet. Add one!</Text>
+        </View>
+      ) : (
+        <FlatList data={tasks} renderItem={renderItem} keyExtractor={(item) => item.id} />
+      )}
       <View style={styles.inputContainer}>
         <TouchableOpacity onPress={() => setIsModalVisible(true)} style={styles.addButton}>
           <FontAwesome size={24} name="plus" color="white" />
         </TouchableOpacity>
-
         <AddTaskModal
-        visible={isModalVisible}
-        onClose={() => {
-          setIsModalVisible(false);
-          setEditingTask(null);
-        }}
-        onSubmit={handleEditTask}
-        initialData={editingTask}
-      />
+          visible={isModalVisible}
+          onClose={() => {
+            setIsModalVisible(false);
+            setEditingTask(null);
+          }}
+          onSubmit={handleSaveTask}
+          initialData={editingTask}
+        />
       </View>
     </View>
   );
@@ -104,9 +108,8 @@ const styles = StyleSheet.create({
   headerContainer: { flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', marginBottom: 20 },
   header: { fontSize: 24, fontWeight: 'bold' },
   taskContainer: {
-    padding: 10,
+    padding: 15,
     width: '100%',
-    height: 60,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: '#55AD82',
@@ -122,11 +125,10 @@ const styles = StyleSheet.create({
   checkbox: { width: 24, height: 24, borderRadius: 5, borderWidth: 2, borderColor: '#55AD82', marginRight: 15, justifyContent: 'center', alignItems: 'center' },
   checkboxCompleted: { backgroundColor: '#55AD82' },
   checkmark: { color: 'white', fontWeight: 'bold' },
-  taskText: { fontSize: 16, color: '#333' },
-  taskTextCompleted: { textDecorationLine: 'line-through', color: 'gray' },
+  taskText: { fontSize: 16, color: '#333', fontWeight: 'bold' }, // Buat judul tebal
+  taskTextCompleted: { textDecorationLine: 'line-through', color: 'gray', fontWeight: 'normal' },
   deleteText: { color: 'red', fontSize: 14 },
   inputContainer: { padding: 20, borderTopWidth: 1, borderColor: '#f0f0f0', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' },
-  input: { flex: 1, height: 50, backgroundColor: '#F7F8FA', borderRadius: 10, paddingHorizontal: 15, marginRight: 10 },
   addButton: {
     width: 50,
     height: 50,
@@ -146,14 +148,25 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginTop: 4,
   },
+  taskDate: { 
+    fontSize: 12,
+    color: '#888',
+    marginTop: 5,
+  },
   taskTextContainer: {
-    display: 'flex',
+    flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    marginHorizontal: 15,
   },
-  addButtonText: { color: 'white', fontSize: 24, fontWeight: 'bold' },
-  list: { flex: 1 },
   thirdText: { fontSize: 16, color: '#999B9A' },
   actionButton: { padding: 5, marginLeft: 10 },
+  emptyContainer: { 
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 18,
+    color: 'gray',
+  },
 });
