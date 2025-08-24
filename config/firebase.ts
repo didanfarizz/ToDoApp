@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 // import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
+import {getDatabase} from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -10,6 +11,7 @@ import { getAuth } from "firebase/auth";
 const firebaseConfig = {
   apiKey: "AIzaSyC7Fn-b7SgcDBhQFpQmwursW61yak5hMH0",
   authDomain: "todoapp-41392.firebaseapp.com",
+  databaseURL: "https://todoapp-41392-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "todoapp-41392",
   storageBucket: "todoapp-41392.firebasestorage.app",
   messagingSenderId: "109529394520",
@@ -21,3 +23,4 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
 export const FIREBASE_AUTH = getAuth(app);
+export const db = getDatabase();

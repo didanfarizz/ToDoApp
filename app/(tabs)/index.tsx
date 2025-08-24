@@ -1,5 +1,7 @@
-import AddTaskModal from '@/components/AddTaskModal'; 
+import AddTaskModal from '@/components/AddTaskModal';
+import { db } from '@/config/firebase';
 import { FontAwesome } from '@expo/vector-icons';
+import { onValue, ref, set, update, remove } from 'firebase/database';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ListRenderItem, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -18,6 +20,24 @@ export default function TodoListScreen() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   useEffect(() => {
+    const tasksRef = ref(db, 'tasks');
+    const unsubscribe = onValue(tasksRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const parsedTasks = Object.entries(data).map(([id, value]: any) => ({
+          id,
+          ...value,
+        }));
+        setTasks(parsedTasks);
+      } else {
+        setTasks([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date().toLocaleDateString('en-GB', { month: 'long', day: 'numeric', year: 'numeric' }));
     }, 1000);
@@ -26,16 +46,25 @@ export default function TodoListScreen() {
 
   const handleSaveTask = (title: string, description: string, date: string) => {
     if (editingTask) {
-      // Mode Edit
-      setTasks(tasks.map((t) => (t.id === editingTask.id ? { ...t, title, description, date } : t)));
+      // Edit
+      update(ref(db, `tasks/${editingTask.id}`), {
+        title,
+        description,
+        date,
+        completed: editingTask.completed,
+      });
     } else {
-      // Mode Tambah Baru
-      const newTask: Task = { id: Date.now().toString(), title, description, completed: false, date };
-      setTasks([...tasks, newTask]);
+      const newId = Date.now().toString();
+      set(ref(db, `tasks/${newId}`), {
+        title,
+        description,
+        date,
+        completed: false,
+      });
     }
     setEditingTask(null);
     setIsModalVisible(false);
-  }
+  };
 
   const handleEditPress = (task: Task) => {
     setEditingTask(task);
@@ -43,11 +72,17 @@ export default function TodoListScreen() {
   };
 
   const toggleTask = (id: string) => {
-    setTasks(tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
+    const task = tasks.find((t) => t.id === id);
+    if (task) {
+      update(ref(db, `tasks/${id}`), {
+        ...task,
+        completed: !task.completed,
+      });
+    }
   };
 
   const deleteTask = (id: string) => {
-    setTasks(tasks.filter((t) => t.id !== id));
+    remove(ref(db, `tasks/${id}`));
   };
 
   const renderItem: ListRenderItem<Task> = ({ item }) => (
@@ -57,14 +92,20 @@ export default function TodoListScreen() {
         <View style={styles.taskTextContainer}>
           <Text style={[styles.taskText, item.completed && styles.taskTextCompleted]}>{item.title}</Text>
           {item.description ? <Text style={[styles.taskDescription, item.completed && styles.taskTextCompleted]}>{item.description}</Text> : null}
-          <Text style={styles.taskDate}><FontAwesome name="calendar" size={12} color="#888" /> {new Date(item.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</Text>
+          <Text style={styles.taskDate}>
+            <FontAwesome name="calendar" size={12} color="#888" /> {new Date(item.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+          </Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => handleEditPress(item)} style={styles.actionButton}>
-        <Text style={styles.deleteText}><FontAwesome name="pencil" size={20} color="#55AD82" /></Text>
+        <Text style={styles.deleteText}>
+          <FontAwesome name="pencil" size={20} color="#55AD82" />
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => deleteTask(item.id)} style={styles.actionButton}>
-        <Text style={styles.deleteText}><FontAwesome name="trash" size={20} color="red" /></Text>
+        <Text style={styles.deleteText}>
+          <FontAwesome name="trash" size={20} color="red" />
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -148,7 +189,7 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginTop: 4,
   },
-  taskDate: { 
+  taskDate: {
     fontSize: 12,
     color: '#888',
     marginTop: 5,
@@ -160,7 +201,7 @@ const styles = StyleSheet.create({
   },
   thirdText: { fontSize: 16, color: '#999B9A' },
   actionButton: { padding: 5, marginLeft: 10 },
-  emptyContainer: { 
+  emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
